@@ -1,21 +1,29 @@
 public class Main {
     public static void main(String[] args) {
-
-        // Singleton
-        Sistema sistema = Sistema.getInstance("MeuApp", "smtp.server.com", 3);
+        Sistema sistema = Sistema.getInstance("MeuApp", "smtp.server.com", 2);
         sistema.exibirConfiguracoes();
 
-        // Factory
         NotificacaoFactory emailFactory = new EmailNotificationFactory();
         NotificacaoFactory smsFactory = new SMSNotificationFactory();
         NotificacaoFactory pushFactory = new PushNotificationFactory();
 
-        Notificacao n1 = emailFactory.create("Olá por email!");
-        Notificacao n2 = smsFactory.create("Olá por SMS!");
-        Notificacao n3 = pushFactory.create("Olá por push!");
+        Notificacao email = emailFactory.create("Olá por email!");
+        Notificacao sms = smsFactory.create("Olá por SMS!");
+        Notificacao push = pushFactory.create("Olá por push!");
 
-        n1.sendNotification();
-        n2.sendNotification();
-        n3.sendNotification();
+        NotificacaoInterface emailProxy = new NotificacaoProxy(email, 2);
+        NotificacaoInterface smsProxy = new NotificacaoProxy(sms, 1);
+
+        emailProxy.sendNotification();
+        emailProxy.sendNotification();
+        emailProxy.sendNotification(); 
+
+        smsProxy.sendNotification();
+        smsProxy.sendNotification();
+
+        APIExterna api = new APIExterna();
+        NotificacaoInterface apiAdapter = new APIExternaAdapter(api, "Mensagem via API externa");
+
+        apiAdapter.sendNotification();
     }
 }
